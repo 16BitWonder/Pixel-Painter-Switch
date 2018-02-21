@@ -1,5 +1,5 @@
 # Pixel-Painter
-My first Switch homebrew application, a port of my 3DS application [Pixel-Painter](https://github.com/16BitWonder/Pixel-Painter).
+My first Switch homebrew application, a port of my 3DS application [Pixel-Painter](https://github.com/16BitWonder/Pixel-Painter).  
 Uses the hello-world template from [libnx](https://github.com/switchbrew/libnx) as a base.
 
 Features: 
