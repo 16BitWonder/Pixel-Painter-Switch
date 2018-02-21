@@ -8,7 +8,7 @@ void updateColorSelection();
 void updateCursor(int, int);
 
 //Global Variables
-//Color Control, 0=Red, 1=Yellow, 2=Green, 3=Blue, 4=Cyan, 5=Purple,
+//Color Control, 0=Red, 1=Yellow, 2=Green, 3=Blue, 4=Cyan, 5=Purple, 6=White,
 int currentColor = 0;
 int col = 99;
 int row = 50;
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 	consoleInit(NULL);
 
 	//Draw Frame
-	printf("\x1b[0;0H\x1b[47m                                                                                                                                                                ");
+	printf("\x1b[0;0H\e[47m                                                                                                                                                                ");
 	printf("\x1b[100;0H                                                                                                                                                                ");
 	for (int j = 2; j < 90; j++)
 	{
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 	}
 	
 	//Draw Controls
-	printf("\x1b[9;14H\x1b[40mPixel-Painter");
+	printf("\x1b[9;14H\e[40mPixel-Painter");
 	printf("\x1b[14;17HControls");
 	printf("\x1b[17;6HLPad/LStick = Cursor controller");
 	printf("\x1b[20;8HL/R = Cycle colors up/down");
@@ -40,23 +40,25 @@ int main(int argc, char **argv)
 	printf("\x1b[26;10HPlus = Exits to HBmenu");
 
 	//Draw Out Color Selection
-	for (int j = 30; j < 37; j++)
+	for (int j = 31; j < 37; j++)
 	{
-		printf("\x1b[%d;2H\x1b[41m                                       ", j);
-		printf("\x1b[%d;2H\x1b[43m     ", j+10);
-		printf("\x1b[%d;36H\x1b[43m     ", j+10);
-		printf("\x1b[%d;2H\x1b[42m     ", j+20);
-		printf("\x1b[%d;36H\x1b[42m     ", j+20);
-		printf("\x1b[%d;2H\x1b[44m     ", j+30);
-		printf("\x1b[%d;36H\x1b[44m     ", j+30);
-		printf("\x1b[%d;2H\x1b[46m     ", j+40);
-		printf("\x1b[%d;36H\x1b[46m     ", j+40);
-		printf("\x1b[%d;2H\x1b[45m     ", j+50);
-		printf("\x1b[%d;36H\x1b[45m     ", j+50);
+		printf("\x1b[%d;2H\e[41m                                       ", j);
+		printf("\x1b[%d;2H\e[43m     ", j+8);
+		printf("\x1b[%d;36H\e[43m     ", j+8);
+		printf("\x1b[%d;2H\e[42m     ", j+16);
+		printf("\x1b[%d;36H\e[42m     ", j+16);
+		printf("\x1b[%d;2H\e[44m     ", j+24);
+		printf("\x1b[%d;36H\e[44m     ", j+24);
+		printf("\x1b[%d;2H\e[46m     ", j+32);
+		printf("\x1b[%d;36H\e[46m     ", j+32);
+		printf("\x1b[%d;2H\e[45m     ", j+40);
+		printf("\x1b[%d;36H\e[45m     ", j+40);
+		printf("\x1b[%d;2H\e[47m     ", j+48);
+		printf("\x1b[%d;36H\e[47m     ", j+48);
 	}
 	
 	//Draw out initial cursor position
-	printf("\x1b[%d;%dH\x1b[40m#", row, col);
+	printf("\x1b[%d;%dH\e[40m#", row, col);
 	
 	while(appletMainLoop())
 	{
@@ -78,13 +80,13 @@ int main(int argc, char **argv)
 		{
 			currentColor--;
 			if (currentColor < 0)
-				currentColor = 5;
+				currentColor = 6;
 			updateColorSelection();
 		}
 		if (kDown & KEY_R)
 		{
 			currentColor++;
-			if (currentColor > 5)
+			if (currentColor > 6)
 				currentColor = 0;
 			updateColorSelection();
 		}
@@ -134,32 +136,36 @@ int main(int argc, char **argv)
 void updateColorSelection()
 {
 	//Update Selection
-	for (int j = 30; j < 37; j++)
+	for (int j = 31; j < 37; j++)
 	{
 		if (currentColor == 0)
-			printf("\x1b[%d;7H\x1b[41m                             ", j);
+			printf("\x1b[%d;7H\e[41m                             ", j);
 		else
-			printf("\x1b[%d;7H\x1b[40m                             ", j);
+			printf("\x1b[%d;7H\e[40m                             ", j);
 		if (currentColor == 1)
-			printf("\x1b[%d;7H\x1b[43m                             ", j+10);
+			printf("\x1b[%d;7H\e[43m                             ", j+8);
 		else
-			printf("\x1b[%d;7H\x1b[40m                             ", j+10);
+			printf("\x1b[%d;7H\e[40m                             ", j+8);
 		if (currentColor == 2)
-			printf("\x1b[%d;7H\x1b[42m                             ", j+20);
+			printf("\x1b[%d;7H\e[42m                             ", j+16);
 		else
-			printf("\x1b[%d;7H\x1b[40m                             ", j+20);
+			printf("\x1b[%d;7H\e[40m                             ", j+16);
 		if (currentColor == 3)
-			printf("\x1b[%d;7H\x1b[44m                             ", j+30);
+			printf("\x1b[%d;7H\e[44m                             ", j+24);
 		else
-			printf("\x1b[%d;7H\x1b[40m                             ", j+30);
+			printf("\x1b[%d;7H\e[40m                             ", j+24);
 		if (currentColor == 4)
-			printf("\x1b[%d;7H\x1b[46m                             ", j+40);
+			printf("\x1b[%d;7H\e[46m                             ", j+32);
 		else
-			printf("\x1b[%d;7H\x1b[40m                             ", j+40);
+			printf("\x1b[%d;7H\e[40m                             ", j+32);
 		if (currentColor == 5)
-			printf("\x1b[%d;7H\x1b[45m                             ", j+50);
+			printf("\x1b[%d;7H\e[45m                             ", j+40);
 		else
-			printf("\x1b[%d;7H\x1b[40m                             ", j+50);
+			printf("\x1b[%d;7H\e[40m                             ", j+40);
+		if (currentColor == 6)
+			printf("\x1b[%d;7H\e[47m                             ", j+48);
+		else
+			printf("\x1b[%d;7H\e[40m                             ", j+48);
 	}
 	updateCursor(row, col);
 }
@@ -171,38 +177,43 @@ void updateCursor(int prevRow, int prevCol)
 	{
 		if (currentColor == 0)
 		{
-			printf("\x1b[%d;%dH\x1b[41m ", prevRow, prevCol);
+			printf("\x1b[%d;%dH\e[41m ", prevRow, prevCol);
 			printf("\x1b[%d;%dH#", row, col);
 		}
 		if (currentColor == 1)
 		{
-			printf("\x1b[%d;%dH\x1b[43m ", prevRow, prevCol);
+			printf("\x1b[%d;%dH\e[43m ", prevRow, prevCol);
 			printf("\x1b[%d;%dH#", row, col);
 		}
 		if (currentColor == 2)
 		{
-			printf("\x1b[%d;%dH\x1b[42m ", prevRow, prevCol);
+			printf("\x1b[%d;%dH\e[42m ", prevRow, prevCol);
 			printf("\x1b[%d;%dH#", row, col);
 		}
 		if (currentColor == 3)
 		{
-			printf("\x1b[%d;%dH\x1b[44m ", prevRow, prevCol);
+			printf("\x1b[%d;%dH\e[44m ", prevRow, prevCol);
 			printf("\x1b[%d;%dH#", row, col);
 		}
 		if (currentColor == 4)
 		{
-			printf("\x1b[%d;%dH\x1b[46m ", prevRow, prevCol);
+			printf("\x1b[%d;%dH\e[46m ", prevRow, prevCol);
 			printf("\x1b[%d;%dH#", row, col);
 		}
 		if (currentColor == 5)
 		{
-			printf("\x1b[%d;%dH\x1b[45m ", prevRow, prevCol);
+			printf("\x1b[%d;%dH\e[45m ", prevRow, prevCol);
+			printf("\x1b[%d;%dH#", row, col);
+		}
+		if (currentColor == 6)
+		{
+			printf("\x1b[%d;%dH\e[47m ", prevRow, prevCol);
 			printf("\x1b[%d;%dH#", row, col);
 		}
 	}
 	else
 	{
-		printf("\x1b[%d;%dH\x1b[40m ", prevRow, prevCol);
+		printf("\x1b[%d;%dH\e[40m ", prevRow, prevCol);
 		printf("\x1b[%d;%dH#", row, col);
 	}
 }
