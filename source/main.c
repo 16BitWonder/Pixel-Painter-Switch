@@ -6,6 +6,7 @@
 //Declare Functions
 void updateColorSelection();
 void updateCursor(int, int);
+void clearScreen();
 
 //Global Variables
 //Color Control, 0=Red, 1=Yellow, 2=Green, 3=Blue, 4=Cyan, 5=Purple, 6=White,
@@ -13,6 +14,7 @@ int currentColor = 0;
 int col = 99;
 int row = 50;
 bool isDrawing = false;
+bool fastCursor = false;
 
 int main(int argc, char **argv)
 {
@@ -32,12 +34,15 @@ int main(int argc, char **argv)
 	}
 	
 	//Draw Controls
-	printf("\x1b[9;14H\e[40mPixel-Painter");
-	printf("\x1b[14;17HControls");
-	printf("\x1b[17;6HLPad/LStick = Cursor controller");
-	printf("\x1b[20;8HL/R = Cycle colors up/down");
-	printf("\x1b[23;8HA = Toggle drawing/erasing");
-	printf("\x1b[26;10HPlus = Exits to HBmenu");
+	printf("\x1b[6;14H\e[40mPixel-Painter");
+	printf("\x1b[10;17HControls");
+	printf("\x1b[13;6HLPad/LStick = Cursor controller");
+	printf("\x1b[16;8HL/R = Cycle colors up/down");
+	printf("\x1b[19;8HA = Toggle drawing/erasing");
+	printf("\x1b[22;8HMinus = Clear drawing area");
+	printf("\x1b[25;10HY = Toggle fast cursor");
+	printf("\x1b[28;10HPlus = Exits to HBmenu");
+	
 
 	//Draw Out Color Selection
 	for (int j = 31; j < 37; j++)
@@ -66,8 +71,12 @@ int main(int argc, char **argv)
 		hidScanInput();
 		//hidKeysDown returns information about which buttons have been just pressed (and they weren't in the previous frame)
 		u32 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
-		if (kDown & KEY_PLUS) break; // break in order to return to hbmenu
+		u32 kHeld = hidKeysHeld(CONTROLLER_P1_AUTO);
 		
+		
+		if (kDown & KEY_PLUS) break; // break in order to return to hbmenu
+		if (kDown & KEY_MINUS) clearScreen();
+		//Handle A
 		if (kDown & KEY_A)
 		{
 			if (isDrawing)
@@ -76,6 +85,15 @@ int main(int argc, char **argv)
 				isDrawing = true;
 			updateCursor(row, col);
 		}
+		//Handle Y
+		if (kDown & KEY_Y)
+		{
+			if (fastCursor)
+				fastCursor = false;
+			else
+				fastCursor = true;
+		}
+		//Handle L
 		if (kDown & KEY_L)
 		{
 			currentColor--;
@@ -83,6 +101,7 @@ int main(int argc, char **argv)
 				currentColor = 6;
 			updateColorSelection();
 		}
+		//Handle R
 		if (kDown & KEY_R)
 		{
 			currentColor++;
@@ -90,39 +109,98 @@ int main(int argc, char **argv)
 				currentColor = 0;
 			updateColorSelection();
 		}
-		if (kDown & KEY_UP)
+		//Handle Up
+		if  (fastCursor)
 		{
-			int tempRow = row;
-			row--;
-			if (row == 1)
+			if (kHeld & KEY_UP)
+			{
+				int tempRow = row;
+				row--;
+				if (row == 1)
 				row = 89;
-			updateCursor(tempRow, col);
+				updateCursor(tempRow, col);
+			}
 		}
-		if (kDown & KEY_DOWN)
+		else
+		{			
+			if (kDown & KEY_UP)
+			{
+				int tempRow = row;
+				row--;
+				if (row == 1)
+					row = 89;
+				updateCursor(tempRow, col);
+			}
+		}
+		//Handle Down
+		if  (fastCursor)
 		{
-			int tempRow = row;
-			row++;
-			if (row == 90)
+			if (kHeld & KEY_DOWN)
+			{
+				int tempRow = row;
+				row++;
+				if (row == 90)
 				row = 2;
-			updateCursor(tempRow, col);
+				updateCursor(tempRow, col);
+			}
 		}
-		if (kDown & KEY_LEFT)
+		else
+		{			
+			if (kDown & KEY_DOWN)
+			{
+				int tempRow = row;
+				row++;
+				if (row == 90)
+				row = 2;
+				updateCursor(tempRow, col);
+			}
+		}
+		//Handle Left
+		if  (fastCursor)
 		{
-			int tempCol = col;
-			col--;
-			if (col == 41)
+			if (kHeld & KEY_LEFT)
+			{
+				int tempCol = col;
+				col--;
+				if (col == 41)
 				col = 159;
-			updateCursor(row, tempCol);
+				updateCursor(row, tempCol);
+			}
 		}
-		if (kDown & KEY_RIGHT)
+		else
+		{			
+			if (kDown & KEY_LEFT)
+			{
+				int tempCol = col;
+				col--;
+				if (col == 41)
+				col = 159;
+				updateCursor(row, tempCol);
+			}
+		}
+		//Handle Right
+		if  (fastCursor)
 		{
-			int tempCol = col;
-			col++;
-			if (col == 160)
+			if (kHeld & KEY_RIGHT)
+			{
+				int tempCol = col;
+				col++;
+				if (col == 160)
 				col = 42;
-			updateCursor(row, tempCol);
+				updateCursor(row, tempCol);
+			}
 		}
-
+		else
+		{			
+			if (kDown & KEY_RIGHT)
+			{
+				int tempCol = col;
+				col++;
+				if (col == 160)
+				col = 42;
+				updateCursor(row, tempCol);
+			}
+		}
 
 		gfxFlushBuffers();
 		gfxSwapBuffers();
@@ -216,4 +294,14 @@ void updateCursor(int prevRow, int prevCol)
 		printf("\x1b[%d;%dH\e[40m ", prevRow, prevCol);
 		printf("\x1b[%d;%dH#", row, col);
 	}
+}
+
+void clearScreen()
+{
+	//Clear Drawing Area
+	for (int j = 2; j < 90; j++)
+	{
+		printf("\x1b[%d;42H\e[40m                                                                                                                      ", j);
+	}
+	updateCursor(row, col);
 }
