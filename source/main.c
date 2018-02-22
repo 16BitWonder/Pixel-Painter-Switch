@@ -110,96 +110,40 @@ int main(int argc, char **argv)
 			updateColorSelection();
 		}
 		//Handle Up
-		if  (fastCursor)
+		if  ((kDown & KEY_UP) || (fastCursor && (kHeld & KEY_UP)))
 		{
-			if (kHeld & KEY_UP)
-			{
-				int tempRow = row;
-				row--;
-				if (row == 1)
-				row = 89;
-				updateCursor(tempRow, col);
-			}
-		}
-		else
-		{			
-			if (kDown & KEY_UP)
-			{
-				int tempRow = row;
-				row--;
-				if (row == 1)
-					row = 89;
-				updateCursor(tempRow, col);
-			}
+			int tempRow = row;
+			row--;
+			if (row == 1)
+			row = 89;
+			updateCursor(tempRow, col);
 		}
 		//Handle Down
-		if  (fastCursor)
+		if  ((kDown & KEY_DOWN) || (fastCursor && (kHeld & KEY_DOWN)))
 		{
-			if (kHeld & KEY_DOWN)
-			{
-				int tempRow = row;
-				row++;
-				if (row == 90)
-				row = 2;
-				updateCursor(tempRow, col);
-			}
-		}
-		else
-		{			
-			if (kDown & KEY_DOWN)
-			{
-				int tempRow = row;
-				row++;
-				if (row == 90)
-				row = 2;
-				updateCursor(tempRow, col);
-			}
+			int tempRow = row;
+			row++;
+			if (row == 90)
+			row = 2;
+			updateCursor(tempRow, col);
 		}
 		//Handle Left
-		if  (fastCursor)
+		if  ((kDown & KEY_LEFT) || (fastCursor && (kHeld & KEY_LEFT)))
 		{
-			if (kHeld & KEY_LEFT)
-			{
-				int tempCol = col;
-				col--;
-				if (col == 41)
-				col = 159;
-				updateCursor(row, tempCol);
-			}
-		}
-		else
-		{			
-			if (kDown & KEY_LEFT)
-			{
-				int tempCol = col;
-				col--;
-				if (col == 41)
-				col = 159;
-				updateCursor(row, tempCol);
-			}
+			int tempCol = col;
+			col--;
+			if (col == 41)
+			col = 159;
+			updateCursor(row, tempCol);
 		}
 		//Handle Right
-		if  (fastCursor)
+		if  ((kDown & KEY_RIGHT) || (fastCursor && (kHeld & KEY_RIGHT)))
 		{
-			if (kHeld & KEY_RIGHT)
-			{
-				int tempCol = col;
-				col++;
-				if (col == 160)
-				col = 42;
-				updateCursor(row, tempCol);
-			}
-		}
-		else
-		{			
-			if (kDown & KEY_RIGHT)
-			{
-				int tempCol = col;
-				col++;
-				if (col == 160)
-				col = 42;
-				updateCursor(row, tempCol);
-			}
+			int tempCol = col;
+			col++;
+			if (col == 160)
+			col = 42;
+			updateCursor(row, tempCol);
 		}
 
 		gfxFlushBuffers();
