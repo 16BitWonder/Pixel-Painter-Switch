@@ -1,12 +1,6 @@
-#include <string.h>
 #include <stdio.h>
-
 #include <switch.h>
-
-//Declare Functions
-void updateColorSelection();
-void updateCursor(int, int);
-void clearScreen();
+#include "functions.h"
 
 //Global Variables
 //Color Control, 0=Red, 1=Yellow, 2=Green, 3=Blue, 4=Cyan, 5=Purple, 6=White,
@@ -15,6 +9,8 @@ int col = 99;
 int row = 50;
 bool isDrawing = false;
 bool fastCursor = false;
+//Cursor size 0=1x1, 1=2x2, 2=3x3, 3=4x4,
+int currentCursorSize = 0;
 
 int main(int argc, char **argv)
 {
@@ -34,8 +30,9 @@ int main(int argc, char **argv)
 	}
 	
 	//Draw Controls
-	printf("\x1b[6;14H\e[40mPixel-Painter");
-	printf("\x1b[10;17HControls");
+	printf("\x1b[4;14H\e[40mPixel-Painter");
+	printf("\x1b[7;17HControls");
+	printf("\x1b[10;4HZL/ZR = Cycle brush size Left/Right");
 	printf("\x1b[13;6HLPad/LStick = Cursor controller");
 	printf("\x1b[16;8HL/R = Cycle colors up/down");
 	printf("\x1b[19;8HA = Toggle drawing/erasing");
@@ -75,7 +72,7 @@ int main(int argc, char **argv)
 		
 		
 		if (kDown & KEY_PLUS) break; // break in order to return to hbmenu
-		if (kDown & KEY_MINUS) clearScreen();
+		if (kDown & KEY_MINUS) clearScreen(row, col, currentColor, isDrawing);
 		//Handle A
 		if (kDown & KEY_A)
 		{
@@ -83,7 +80,7 @@ int main(int argc, char **argv)
 				isDrawing = false;
 			else
 				isDrawing = true;
-			updateCursor(row, col);
+			updateCursor(row, col, row, col, currentColor, isDrawing);
 		}
 		//Handle Y
 		if (kDown & KEY_Y)
@@ -99,7 +96,7 @@ int main(int argc, char **argv)
 			currentColor--;
 			if (currentColor < 0)
 				currentColor = 6;
-			updateColorSelection();
+			updateColorSelection(row, col, currentColor, isDrawing);
 		}
 		//Handle R
 		if (kDown & KEY_R)
@@ -107,7 +104,7 @@ int main(int argc, char **argv)
 			currentColor++;
 			if (currentColor > 6)
 				currentColor = 0;
-			updateColorSelection();
+			updateColorSelection(row, col, currentColor, isDrawing);
 		}
 		//Handle Up
 		if  ((kDown & KEY_UP) || (fastCursor && (kHeld & KEY_UP)))
@@ -115,17 +112,17 @@ int main(int argc, char **argv)
 			int tempRow = row;
 			row--;
 			if (row == 1)
-			row = 89;
-			updateCursor(tempRow, col);
+			row = 89+currentCursorSize;
+			updateCursor(tempRow, col, row, col, currentColor, isDrawing);
 		}
 		//Handle Down
 		if  ((kDown & KEY_DOWN) || (fastCursor && (kHeld & KEY_DOWN)))
 		{
 			int tempRow = row;
 			row++;
-			if (row == 90)
+			if (row == 90-currentCursorSize)
 			row = 2;
-			updateCursor(tempRow, col);
+			updateCursor(tempRow, col, row, col, currentColor, isDrawing);
 		}
 		//Handle Left
 		if  ((kDown & KEY_LEFT) || (fastCursor && (kHeld & KEY_LEFT)))
@@ -134,7 +131,7 @@ int main(int argc, char **argv)
 			col--;
 			if (col == 41)
 			col = 159;
-			updateCursor(row, tempCol);
+			updateCursor(row, tempCol, row, col, currentColor, isDrawing);
 		}
 		//Handle Right
 		if  ((kDown & KEY_RIGHT) || (fastCursor && (kHeld & KEY_RIGHT)))
@@ -143,7 +140,7 @@ int main(int argc, char **argv)
 			col++;
 			if (col == 160)
 			col = 42;
-			updateCursor(row, tempCol);
+			updateCursor(row, tempCol, row, col, currentColor, isDrawing);
 		}
 
 		gfxFlushBuffers();
@@ -153,99 +150,4 @@ int main(int argc, char **argv)
 
 	gfxExit();
 	return 0;
-}
-
-void updateColorSelection()
-{
-	//Update Selection
-	for (int j = 31; j < 37; j++)
-	{
-		if (currentColor == 0)
-			printf("\x1b[%d;7H\e[41m                             ", j);
-		else
-			printf("\x1b[%d;7H\e[40m                             ", j);
-		if (currentColor == 1)
-			printf("\x1b[%d;7H\e[43m                             ", j+8);
-		else
-			printf("\x1b[%d;7H\e[40m                             ", j+8);
-		if (currentColor == 2)
-			printf("\x1b[%d;7H\e[42m                             ", j+16);
-		else
-			printf("\x1b[%d;7H\e[40m                             ", j+16);
-		if (currentColor == 3)
-			printf("\x1b[%d;7H\e[44m                             ", j+24);
-		else
-			printf("\x1b[%d;7H\e[40m                             ", j+24);
-		if (currentColor == 4)
-			printf("\x1b[%d;7H\e[46m                             ", j+32);
-		else
-			printf("\x1b[%d;7H\e[40m                             ", j+32);
-		if (currentColor == 5)
-			printf("\x1b[%d;7H\e[45m                             ", j+40);
-		else
-			printf("\x1b[%d;7H\e[40m                             ", j+40);
-		if (currentColor == 6)
-			printf("\x1b[%d;7H\e[47m                             ", j+48);
-		else
-			printf("\x1b[%d;7H\e[40m                             ", j+48);
-	}
-	updateCursor(row, col);
-}
-
-void updateCursor(int prevRow, int prevCol)
-{
-	//Update Cursor Color and Position
-	if (isDrawing)
-	{
-		if (currentColor == 0)
-		{
-			printf("\x1b[%d;%dH\e[41m ", prevRow, prevCol);
-			printf("\x1b[%d;%dH#", row, col);
-		}
-		if (currentColor == 1)
-		{
-			printf("\x1b[%d;%dH\e[43m ", prevRow, prevCol);
-			printf("\x1b[%d;%dH#", row, col);
-		}
-		if (currentColor == 2)
-		{
-			printf("\x1b[%d;%dH\e[42m ", prevRow, prevCol);
-			printf("\x1b[%d;%dH#", row, col);
-		}
-		if (currentColor == 3)
-		{
-			printf("\x1b[%d;%dH\e[44m ", prevRow, prevCol);
-			printf("\x1b[%d;%dH#", row, col);
-		}
-		if (currentColor == 4)
-		{
-			printf("\x1b[%d;%dH\e[46m ", prevRow, prevCol);
-			printf("\x1b[%d;%dH#", row, col);
-		}
-		if (currentColor == 5)
-		{
-			printf("\x1b[%d;%dH\e[45m ", prevRow, prevCol);
-			printf("\x1b[%d;%dH#", row, col);
-		}
-		if (currentColor == 6)
-		{
-			printf("\x1b[%d;%dH\e[47m ", prevRow, prevCol);
-			printf("\x1b[%d;%dH#", row, col);
-		}
-	}
-	else
-	{
-		printf("\x1b[%d;%dH\e[40m ", prevRow, prevCol);
-		printf("\x1b[%d;%dH#", row, col);
-	}
-}
-
-void clearScreen()
-{
-	//Clear Drawing Area
-	for (int j = 2; j < 90; j++)
-	{
-		printf("\x1b[%d;42H\e[40m                                                                                                                      ", j);
-	}
-	updateCursor(row, col);
 }
