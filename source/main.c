@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 		
 		
 		if (kDown & KEY_PLUS) break; // break in order to return to hbmenu
-		if (kDown & KEY_MINUS) clearScreen(row, col, currentColor, isDrawing);
+		if (kDown & KEY_MINUS) clearScreen(row, col, currentColor, isDrawing, currentCursorSize);
 		//Handle A
 		if (kDown & KEY_A)
 		{
@@ -80,7 +80,14 @@ int main(int argc, char **argv)
 				isDrawing = false;
 			else
 				isDrawing = true;
-			updateCursor(row, col, row, col, currentColor, isDrawing);
+			if (currentCursorSize == 0)
+				updateCursor1x1(row, col, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 1)
+				updateCursor2x2(row, col, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 2)
+				updateCursor3x3(row, col, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 3)
+				updateCursor4x4(row, col, row, col, currentColor, isDrawing, false, 0);
 		}
 		//Handle Y
 		if (kDown & KEY_Y)
@@ -96,7 +103,7 @@ int main(int argc, char **argv)
 			currentColor--;
 			if (currentColor < 0)
 				currentColor = 6;
-			updateColorSelection(row, col, currentColor, isDrawing);
+			updateColorSelection(row, col, currentColor, isDrawing, currentCursorSize);
 		}
 		//Handle R
 		if (kDown & KEY_R)
@@ -104,7 +111,39 @@ int main(int argc, char **argv)
 			currentColor++;
 			if (currentColor > 6)
 				currentColor = 0;
-			updateColorSelection(row, col, currentColor, isDrawing);
+			updateColorSelection(row, col, currentColor, isDrawing, currentCursorSize);
+		}
+		//Handle ZL
+		if (kDown & KEY_ZL)
+		{
+			int prevSize = currentCursorSize;
+			currentCursorSize--;
+			if (currentCursorSize < 0)
+				currentCursorSize = 3;
+			if (currentCursorSize == 0)
+				updateCursor1x1(row, col, row, col, currentColor, isDrawing, true, prevSize);
+			if (currentCursorSize == 1)
+				updateCursor2x2(row, col, row, col, currentColor, isDrawing, true, prevSize);
+			if (currentCursorSize == 2)
+				updateCursor3x3(row, col, row, col, currentColor, isDrawing, true, prevSize);
+			if (currentCursorSize == 3)
+				updateCursor4x4(row, col, row, col, currentColor, isDrawing, true, prevSize);
+		}
+		//Handle ZR
+		if (kDown & KEY_ZR)
+		{
+			int prevSize = currentCursorSize;
+			currentCursorSize++;
+			if (currentCursorSize > 3)
+				currentCursorSize = 0;
+			if (currentCursorSize == 0)
+				updateCursor1x1(row, col, row, col, currentColor, isDrawing, true, prevSize);
+			if (currentCursorSize == 1)
+				updateCursor2x2(row, col, row, col, currentColor, isDrawing, true, prevSize);
+			if (currentCursorSize == 2)
+				updateCursor3x3(row, col, row, col, currentColor, isDrawing, true, prevSize);
+			if (currentCursorSize == 3)
+				updateCursor4x4(row, col, row, col, currentColor, isDrawing, true, prevSize);
 		}
 		//Handle Up
 		if  ((kDown & KEY_UP) || (fastCursor && (kHeld & KEY_UP)))
@@ -112,8 +151,15 @@ int main(int argc, char **argv)
 			int tempRow = row;
 			row--;
 			if (row == 1)
-			row = 89+currentCursorSize;
-			updateCursor(tempRow, col, row, col, currentColor, isDrawing);
+				row = 89-currentCursorSize;
+			if (currentCursorSize == 0)
+				updateCursor1x1(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 1)
+				updateCursor2x2(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 2)
+				updateCursor3x3(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 3)
+				updateCursor4x4(tempRow, col, row, col, currentColor, isDrawing, false, 0);
 		}
 		//Handle Down
 		if  ((kDown & KEY_DOWN) || (fastCursor && (kHeld & KEY_DOWN)))
@@ -121,8 +167,15 @@ int main(int argc, char **argv)
 			int tempRow = row;
 			row++;
 			if (row == 90-currentCursorSize)
-			row = 2;
-			updateCursor(tempRow, col, row, col, currentColor, isDrawing);
+				row = 2;
+			if (currentCursorSize == 0)
+				updateCursor1x1(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 1)
+				updateCursor2x2(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 2)
+				updateCursor3x3(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 3)
+				updateCursor4x4(tempRow, col, row, col, currentColor, isDrawing, false, 0);
 		}
 		//Handle Left
 		if  ((kDown & KEY_LEFT) || (fastCursor && (kHeld & KEY_LEFT)))
@@ -130,17 +183,31 @@ int main(int argc, char **argv)
 			int tempCol = col;
 			col--;
 			if (col == 41)
-			col = 159;
-			updateCursor(row, tempCol, row, col, currentColor, isDrawing);
+				col = 159-currentCursorSize;
+			if (currentCursorSize == 0)
+				updateCursor1x1(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 1)
+				updateCursor2x2(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 2)
+				updateCursor3x3(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 3)
+				updateCursor4x4(row, tempCol, row, col, currentColor, isDrawing, false, 0);
 		}
 		//Handle Right
 		if  ((kDown & KEY_RIGHT) || (fastCursor && (kHeld & KEY_RIGHT)))
 		{
 			int tempCol = col;
 			col++;
-			if (col == 160)
-			col = 42;
-			updateCursor(row, tempCol, row, col, currentColor, isDrawing);
+			if (col == 160-currentCursorSize)
+				col = 42;
+			if (currentCursorSize == 0)
+				updateCursor1x1(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 1)
+				updateCursor2x2(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 2)
+				updateCursor3x3(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+			if (currentCursorSize == 3)
+				updateCursor4x4(row, tempCol, row, col, currentColor, isDrawing, false, 0);
 		}
 
 		gfxFlushBuffers();
