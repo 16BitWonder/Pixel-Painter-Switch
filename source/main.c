@@ -5,28 +5,35 @@
 //Global Variables
 //Color Control, 0=Red, 1=Yellow, 2=Green, 3=Blue, 4=Cyan, 5=Purple, 6=White,
 int currentColor = 0;
-int col = 99;
-int row = 50;
+int col = 81;
+int row = 35;
 bool isDrawing = false;
 bool fastCursor = false;
 //Cursor size 0=1x1, 1=2x2, 2=3x3, 3=4x4,
 int currentCursorSize = 0;
+bool windowNotSet = true;
 
 int main(int argc, char **argv)
 {
+	gfxInitResolutionDefault();
 	gfxInitDefault();
 
 	//Initialize console. Using NULL as the second argument tells the console library to use the internal console structure as current one.
 	consoleInit(NULL);
-
+	if (windowNotSet){
+		//Set console window
+		consoleSetWindow(NULL, 0, 0, 120, 67);
+		windowNotSet = false;
+	}
+	
 	//Draw Frame
-	printf("\x1b[0;0H\e[47m                                                                                                                                                                ");
-	printf("\x1b[100;0H                                                                                                                                                                ");
-	for (int j = 2; j < 90; j++)
+	printf("\x1b[0;0H\e[47m                                                                                                                        ");
+	printf("\x1b[67;0H                                                                                                                        ");
+	for (int j = 2; j < 67; j++)
 	{
 		printf("\x1b[%d;0H ", j);
 		printf("\x1b[%d;41H ", j);
-		printf("\x1b[%d;160H ", j);
+		printf("\x1b[%d;120H ", j);
 	}
 	
 	//Draw Controls
@@ -42,21 +49,21 @@ int main(int argc, char **argv)
 	
 
 	//Draw Out Color Selection
-	for (int j = 31; j < 37; j++)
+	for (int j = 31; j < 34; j++)
 	{
-		printf("\x1b[%d;2H\e[41m                                       ", j);
-		printf("\x1b[%d;2H\e[43m     ", j+8);
-		printf("\x1b[%d;36H\e[43m     ", j+8);
-		printf("\x1b[%d;2H\e[42m     ", j+16);
-		printf("\x1b[%d;36H\e[42m     ", j+16);
-		printf("\x1b[%d;2H\e[44m     ", j+24);
-		printf("\x1b[%d;36H\e[44m     ", j+24);
-		printf("\x1b[%d;2H\e[46m     ", j+32);
-		printf("\x1b[%d;36H\e[46m     ", j+32);
-		printf("\x1b[%d;2H\e[45m     ", j+40);
-		printf("\x1b[%d;36H\e[45m     ", j+40);
-		printf("\x1b[%d;2H\e[47m     ", j+48);
-		printf("\x1b[%d;36H\e[47m     ", j+48);
+		printf("\x1b[%d;2H\e[41m                                       ", j); //DROP THIS AND JUST USE THE UPDATE METHOD AFTER SETUP()
+		printf("\x1b[%d;2H\e[43m     ", j+5);
+		printf("\x1b[%d;36H\e[43m     ", j+5);
+		printf("\x1b[%d;2H\e[42m     ", j+10);
+		printf("\x1b[%d;36H\e[42m     ", j+10);
+		printf("\x1b[%d;2H\e[44m     ", j+15);
+		printf("\x1b[%d;36H\e[44m     ", j+15);
+		printf("\x1b[%d;2H\e[46m     ", j+20);
+		printf("\x1b[%d;36H\e[46m     ", j+20);
+		printf("\x1b[%d;2H\e[45m     ", j+25);
+		printf("\x1b[%d;36H\e[45m     ", j+25);
+		printf("\x1b[%d;2H\e[47m     ", j+30);
+		printf("\x1b[%d;36H\e[47m     ", j+30);
 	}
 	
 	//Draw out initial cursor position
@@ -64,6 +71,7 @@ int main(int argc, char **argv)
 	
 	while(appletMainLoop())
 	{
+		
 		//Scan all the inputs. This should be done once for each frame
 		hidScanInput();
 		//hidKeysDown returns information about which buttons have been just pressed (and they weren't in the previous frame)
@@ -120,6 +128,10 @@ int main(int argc, char **argv)
 			currentCursorSize--;
 			if (currentCursorSize < 0)
 				currentCursorSize = 3;
+			
+			row = checkForRowCursorOverlap(row, currentCursorSize);
+			col = checkForColCursorOverlap(col, currentCursorSize);
+			
 			if (currentCursorSize == 0)
 				updateCursor1x1(row, col, row, col, currentColor, isDrawing, true, prevSize);
 			if (currentCursorSize == 1)
@@ -136,6 +148,10 @@ int main(int argc, char **argv)
 			currentCursorSize++;
 			if (currentCursorSize > 3)
 				currentCursorSize = 0;
+			
+			row = checkForRowCursorOverlap(row, currentCursorSize);
+			col = checkForColCursorOverlap(col, currentCursorSize);
+			
 			if (currentCursorSize == 0)
 				updateCursor1x1(row, col, row, col, currentColor, isDrawing, true, prevSize);
 			if (currentCursorSize == 1)
@@ -151,7 +167,7 @@ int main(int argc, char **argv)
 			int tempRow = row;
 			row--;
 			if (row == 1)
-				row = 89-currentCursorSize;
+				row = 66-currentCursorSize;
 			if (currentCursorSize == 0)
 				updateCursor1x1(tempRow, col, row, col, currentColor, isDrawing, false, 0);
 			if (currentCursorSize == 1)
@@ -166,7 +182,7 @@ int main(int argc, char **argv)
 		{
 			int tempRow = row;
 			row++;
-			if (row == 90-currentCursorSize)
+			if (row == 67-currentCursorSize)
 				row = 2;
 			if (currentCursorSize == 0)
 				updateCursor1x1(tempRow, col, row, col, currentColor, isDrawing, false, 0);
@@ -183,7 +199,7 @@ int main(int argc, char **argv)
 			int tempCol = col;
 			col--;
 			if (col == 41)
-				col = 159-currentCursorSize;
+				col = 119-currentCursorSize;
 			if (currentCursorSize == 0)
 				updateCursor1x1(row, tempCol, row, col, currentColor, isDrawing, false, 0);
 			if (currentCursorSize == 1)
@@ -198,7 +214,7 @@ int main(int argc, char **argv)
 		{
 			int tempCol = col;
 			col++;
-			if (col == 160-currentCursorSize)
+			if (col == 120-currentCursorSize)
 				col = 42;
 			if (currentCursorSize == 0)
 				updateCursor1x1(row, tempCol, row, col, currentColor, isDrawing, false, 0);
