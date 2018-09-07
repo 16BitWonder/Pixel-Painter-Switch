@@ -5,36 +5,36 @@
 void updateColorSelection(int row, int col, int currentColor, bool isDrawing, int cursorSize)
 {
 	//Update Selection
-	for (int j = 31; j < 37; j++)
+	for (int j = 31; j < 34; j++)
 	{
 		if (currentColor == 0)
 			printf("\x1b[%d;7H\e[41m                             ", j);
 		else
 			printf("\x1b[%d;7H\e[40m                             ", j);
 		if (currentColor == 1)
-			printf("\x1b[%d;7H\e[43m                             ", j+8);
+			printf("\x1b[%d;7H\e[43m                             ", j+5);
 		else
-			printf("\x1b[%d;7H\e[40m                             ", j+8);
+			printf("\x1b[%d;7H\e[40m                             ", j+5);
 		if (currentColor == 2)
-			printf("\x1b[%d;7H\e[42m                             ", j+16);
+			printf("\x1b[%d;7H\e[42m                             ", j+10);
 		else
-			printf("\x1b[%d;7H\e[40m                             ", j+16);
+			printf("\x1b[%d;7H\e[40m                             ", j+10);
 		if (currentColor == 3)
-			printf("\x1b[%d;7H\e[44m                             ", j+24);
+			printf("\x1b[%d;7H\e[44m                             ", j+15);
 		else
-			printf("\x1b[%d;7H\e[40m                             ", j+24);
+			printf("\x1b[%d;7H\e[40m                             ", j+15);
 		if (currentColor == 4)
-			printf("\x1b[%d;7H\e[46m                             ", j+32);
+			printf("\x1b[%d;7H\e[46m                             ", j+20);
 		else
-			printf("\x1b[%d;7H\e[40m                             ", j+32);
+			printf("\x1b[%d;7H\e[40m                             ", j+20);
 		if (currentColor == 5)
-			printf("\x1b[%d;7H\e[45m                             ", j+40);
+			printf("\x1b[%d;7H\e[45m                             ", j+25);
 		else
-			printf("\x1b[%d;7H\e[40m                             ", j+40);
+			printf("\x1b[%d;7H\e[40m                             ", j+25);
 		if (currentColor == 6)
-			printf("\x1b[%d;7H\e[47m                             ", j+48);
+			printf("\x1b[%d;7H\e[47m                             ", j+30);
 		else
-			printf("\x1b[%d;7H\e[40m                             ", j+48);
+			printf("\x1b[%d;7H\e[40m                             ", j+30);
 	}
 	if (cursorSize == 0)
 		updateCursor1x1(row, col, row, col, currentColor, isDrawing, false, 0);
@@ -49,9 +49,9 @@ void updateColorSelection(int row, int col, int currentColor, bool isDrawing, in
 void clearScreen(int row, int col, int currentColor, bool isDrawing, int cursorSize)
 {
 	//Clear Drawing Area
-	for (int j = 2; j < 90; j++)
+	for (int j = 2; j < 67; j++)
 	{
-		printf("\x1b[%d;42H\e[40m                                                                                                                      ", j);
+		printf("\x1b[%d;42H\e[40m                                                                              ", j);
 	}
 	if (cursorSize == 0)
 		updateCursor1x1(row, col, row, col, currentColor, isDrawing, false, 0);
@@ -548,4 +548,22 @@ void updateCursor4x4(int prevRow, int prevCol, int row, int col, int currentColo
 		printf("\x1b[%d;%dH####", row+2, col);
 		printf("\x1b[%d;%dH####", row+3, col);
 	}
+}
+
+int checkForRowCursorOverlap(int row, int newSize)
+{
+	while (row > 66-newSize)
+	{
+		row--;
+	}
+	return row;
+}
+
+int checkForColCursorOverlap(int col, int newSize)
+{
+	while (col > 119-newSize)
+	{
+		col--;
+	}
+	return col;
 }
