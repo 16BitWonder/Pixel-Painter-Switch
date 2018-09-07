@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 	//Draw Out Color Selection
 	for (int j = 31; j < 34; j++)
 	{
-		printf("\x1b[%d;2H\e[41m                                       ", j); //DROP THIS AND JUST USE THE UPDATE METHOD AFTER SETUP()
+		printf("\x1b[%d;2H\e[41m                                       ", j);
 		printf("\x1b[%d;2H\e[43m     ", j+5);
 		printf("\x1b[%d;36H\e[43m     ", j+5);
 		printf("\x1b[%d;2H\e[42m     ", j+10);
