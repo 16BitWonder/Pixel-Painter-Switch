@@ -77,153 +77,155 @@ int main(int argc, char **argv)
 		//hidKeysDown returns information about which buttons have been just pressed (and they weren't in the previous frame)
 		u32 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
 		u32 kHeld = hidKeysHeld(CONTROLLER_P1_AUTO);
-		
-		
-		if (kDown & KEY_PLUS) break; // break in order to return to hbmenu
-		if (kDown & KEY_MINUS) clearScreen(row, col, currentColor, isDrawing, currentCursorSize);
-		//Handle A
-		if (kDown & KEY_A)
-		{
-			if (isDrawing)
-				isDrawing = false;
-			else
-				isDrawing = true;
-			if (currentCursorSize == 0)
-				updateCursor1x1(row, col, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 1)
-				updateCursor2x2(row, col, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 2)
-				updateCursor3x3(row, col, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 3)
-				updateCursor4x4(row, col, row, col, currentColor, isDrawing, false, 0);
-		}
-		//Handle Y
-		if (kDown & KEY_Y)
-		{
-			if (fastCursor)
-				fastCursor = false;
-			else
-				fastCursor = true;
-		}
-		//Handle L
-		if (kDown & KEY_L)
-		{
-			currentColor--;
-			if (currentColor < 0)
-				currentColor = 6;
-			updateColorSelection(row, col, currentColor, isDrawing, currentCursorSize);
-		}
-		//Handle R
-		if (kDown & KEY_R)
-		{
-			currentColor++;
-			if (currentColor > 6)
-				currentColor = 0;
-			updateColorSelection(row, col, currentColor, isDrawing, currentCursorSize);
-		}
-		//Handle ZL
-		if (kDown & KEY_ZL)
-		{
-			int prevSize = currentCursorSize;
-			currentCursorSize--;
-			if (currentCursorSize < 0)
-				currentCursorSize = 3;
 			
-			row = checkForRowCursorOverlap(row, currentCursorSize);
-			col = checkForColCursorOverlap(col, currentCursorSize);
-			
-			if (currentCursorSize == 0)
-				updateCursor1x1(row, col, row, col, currentColor, isDrawing, true, prevSize);
-			if (currentCursorSize == 1)
-				updateCursor2x2(row, col, row, col, currentColor, isDrawing, true, prevSize);
-			if (currentCursorSize == 2)
-				updateCursor3x3(row, col, row, col, currentColor, isDrawing, true, prevSize);
-			if (currentCursorSize == 3)
-				updateCursor4x4(row, col, row, col, currentColor, isDrawing, true, prevSize);
-		}
-		//Handle ZR
-		if (kDown & KEY_ZR)
+		if (kDown || kHeld)
 		{
-			int prevSize = currentCursorSize;
-			currentCursorSize++;
-			if (currentCursorSize > 3)
-				currentCursorSize = 0;
-			
-			row = checkForRowCursorOverlap(row, currentCursorSize);
-			col = checkForColCursorOverlap(col, currentCursorSize);
-			
-			if (currentCursorSize == 0)
-				updateCursor1x1(row, col, row, col, currentColor, isDrawing, true, prevSize);
-			if (currentCursorSize == 1)
-				updateCursor2x2(row, col, row, col, currentColor, isDrawing, true, prevSize);
-			if (currentCursorSize == 2)
-				updateCursor3x3(row, col, row, col, currentColor, isDrawing, true, prevSize);
-			if (currentCursorSize == 3)
-				updateCursor4x4(row, col, row, col, currentColor, isDrawing, true, prevSize);
-		}
-		//Handle Up
-		if  ((kDown & KEY_UP) || (fastCursor && (kHeld & KEY_UP)))
-		{
-			int tempRow = row;
-			row--;
-			if (row == 1)
-				row = 66-currentCursorSize;
-			if (currentCursorSize == 0)
-				updateCursor1x1(tempRow, col, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 1)
-				updateCursor2x2(tempRow, col, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 2)
-				updateCursor3x3(tempRow, col, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 3)
-				updateCursor4x4(tempRow, col, row, col, currentColor, isDrawing, false, 0);
-		}
-		//Handle Down
-		if  ((kDown & KEY_DOWN) || (fastCursor && (kHeld & KEY_DOWN)))
-		{
-			int tempRow = row;
-			row++;
-			if (row == 67-currentCursorSize)
-				row = 2;
-			if (currentCursorSize == 0)
-				updateCursor1x1(tempRow, col, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 1)
-				updateCursor2x2(tempRow, col, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 2)
-				updateCursor3x3(tempRow, col, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 3)
-				updateCursor4x4(tempRow, col, row, col, currentColor, isDrawing, false, 0);
-		}
-		//Handle Left
-		if  ((kDown & KEY_LEFT) || (fastCursor && (kHeld & KEY_LEFT)))
-		{
-			int tempCol = col;
-			col--;
-			if (col == 41)
-				col = 119-currentCursorSize;
-			if (currentCursorSize == 0)
-				updateCursor1x1(row, tempCol, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 1)
-				updateCursor2x2(row, tempCol, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 2)
-				updateCursor3x3(row, tempCol, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 3)
-				updateCursor4x4(row, tempCol, row, col, currentColor, isDrawing, false, 0);
-		}
-		//Handle Right
-		if  ((kDown & KEY_RIGHT) || (fastCursor && (kHeld & KEY_RIGHT)))
-		{
-			int tempCol = col;
-			col++;
-			if (col == 120-currentCursorSize)
-				col = 42;
-			if (currentCursorSize == 0)
-				updateCursor1x1(row, tempCol, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 1)
-				updateCursor2x2(row, tempCol, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 2)
-				updateCursor3x3(row, tempCol, row, col, currentColor, isDrawing, false, 0);
-			if (currentCursorSize == 3)
-				updateCursor4x4(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+			if (kDown & KEY_PLUS) break; // break in order to return to hbmenu
+			if (kDown & KEY_MINUS) clearScreen(row, col, currentColor, isDrawing, currentCursorSize);
+			//Handle A
+			if (kDown & KEY_A)
+			{
+				if (isDrawing)
+					isDrawing = false;
+				else
+					isDrawing = true;
+				if (currentCursorSize == 0)
+					updateCursor1x1(row, col, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 1)
+					updateCursor2x2(row, col, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 2)
+					updateCursor3x3(row, col, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 3)
+					updateCursor4x4(row, col, row, col, currentColor, isDrawing, false, 0);
+			}
+			//Handle Y
+			if (kDown & KEY_Y)
+			{
+				if (fastCursor)
+					fastCursor = false;
+				else
+					fastCursor = true;
+			}
+			//Handle L
+			if (kDown & KEY_L)
+			{
+				currentColor--;
+				if (currentColor < 0)
+					currentColor = 6;
+				updateColorSelection(row, col, currentColor, isDrawing, currentCursorSize);
+			}
+			//Handle R
+			if (kDown & KEY_R)
+			{
+				currentColor++;
+				if (currentColor > 6)
+					currentColor = 0;
+				updateColorSelection(row, col, currentColor, isDrawing, currentCursorSize);
+			}
+			//Handle ZL
+			if (kDown & KEY_ZL)
+			{
+				int prevSize = currentCursorSize;
+				currentCursorSize--;
+				if (currentCursorSize < 0)
+					currentCursorSize = 3;
+				
+				row = checkForRowCursorOverlap(row, currentCursorSize);
+				col = checkForColCursorOverlap(col, currentCursorSize);
+				
+				if (currentCursorSize == 0)
+					updateCursor1x1(row, col, row, col, currentColor, isDrawing, true, prevSize);
+				if (currentCursorSize == 1)
+					updateCursor2x2(row, col, row, col, currentColor, isDrawing, true, prevSize);
+				if (currentCursorSize == 2)
+					updateCursor3x3(row, col, row, col, currentColor, isDrawing, true, prevSize);
+				if (currentCursorSize == 3)
+					updateCursor4x4(row, col, row, col, currentColor, isDrawing, true, prevSize);
+			}
+			//Handle ZR
+			if (kDown & KEY_ZR)
+			{
+				int prevSize = currentCursorSize;
+				currentCursorSize++;
+				if (currentCursorSize > 3)
+					currentCursorSize = 0;
+				
+				row = checkForRowCursorOverlap(row, currentCursorSize);
+				col = checkForColCursorOverlap(col, currentCursorSize);
+				
+				if (currentCursorSize == 0)
+					updateCursor1x1(row, col, row, col, currentColor, isDrawing, true, prevSize);
+				if (currentCursorSize == 1)
+					updateCursor2x2(row, col, row, col, currentColor, isDrawing, true, prevSize);
+				if (currentCursorSize == 2)
+					updateCursor3x3(row, col, row, col, currentColor, isDrawing, true, prevSize);
+				if (currentCursorSize == 3)
+					updateCursor4x4(row, col, row, col, currentColor, isDrawing, true, prevSize);
+			}
+			//Handle Up
+			if  ((kDown & KEY_UP) || (fastCursor && (kHeld & KEY_UP)))
+			{
+				int tempRow = row;
+				row--;
+				if (row == 1)
+					row = 66-currentCursorSize;
+				if (currentCursorSize == 0)
+					updateCursor1x1(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 1)
+					updateCursor2x2(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 2)
+					updateCursor3x3(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 3)
+					updateCursor4x4(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+			}
+			//Handle Down
+			if  ((kDown & KEY_DOWN) || (fastCursor && (kHeld & KEY_DOWN)))
+			{
+				int tempRow = row;
+				row++;
+				if (row == 67-currentCursorSize)
+					row = 2;
+				if (currentCursorSize == 0)
+					updateCursor1x1(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 1)
+					updateCursor2x2(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 2)
+					updateCursor3x3(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 3)
+					updateCursor4x4(tempRow, col, row, col, currentColor, isDrawing, false, 0);
+			}
+			//Handle Left
+			if  ((kDown & KEY_LEFT) || (fastCursor && (kHeld & KEY_LEFT)))
+			{
+				int tempCol = col;
+				col--;
+				if (col == 41)
+					col = 119-currentCursorSize;
+				if (currentCursorSize == 0)
+					updateCursor1x1(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 1)
+					updateCursor2x2(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 2)
+					updateCursor3x3(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 3)
+					updateCursor4x4(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+			}
+			//Handle Right
+			if  ((kDown & KEY_RIGHT) || (fastCursor && (kHeld & KEY_RIGHT)))
+			{
+				int tempCol = col;
+				col++;
+				if (col == 120-currentCursorSize)
+					col = 42;
+				if (currentCursorSize == 0)
+					updateCursor1x1(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 1)
+					updateCursor2x2(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 2)
+					updateCursor3x3(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+				if (currentCursorSize == 3)
+					updateCursor4x4(row, tempCol, row, col, currentColor, isDrawing, false, 0);
+			}
 		}
 
 		gfxFlushBuffers();
