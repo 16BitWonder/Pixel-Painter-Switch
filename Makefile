@@ -38,7 +38,7 @@ EXEFS_SRC	:=	exefs_src
 
 APP_TITLE   := Pixel-Painter
 APP_AUTHOR  := 8BitWonder
-APP_VERSION := 1.6.0
+APP_VERSION := 1.7.0
 ICON 		:= icon.jpg
 
 #---------------------------------------------------------------------------------
