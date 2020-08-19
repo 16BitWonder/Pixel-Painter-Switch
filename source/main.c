@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <switch.h>
 #include "functions.h"
 
 //Global Variables
@@ -11,20 +9,16 @@ bool isDrawing = false;
 bool fastCursor = false;
 //Cursor size 0=1x1, 1=2x2, 2=3x3, 3=4x4,
 int currentCursorSize = 0;
-bool windowNotSet = true;
 
 int main(int argc, char **argv)
 {
-	gfxInitResolutionDefault();
-	gfxInitDefault();
 
-	//Initialize console. Using NULL as the second argument tells the console library to use the internal console structure as current one.
-	consoleInit(NULL);
-	if (windowNotSet){
-		//Set console window
-		consoleSetWindow(NULL, 0, 0, 120, 67);
-		windowNotSet = false;
-	}
+	//Initialize console
+	PrintConsole *con = consoleGetDefault();
+	consoleSetWindow(con,0,0,120,67);
+	con->consoleWidth = 120;
+	con->consoleHeight = 67;
+	consoleInit(con);
 	
 	//Draw Frame
 	printf("\x1b[0;0H\e[47m                                                                                                                        ");
@@ -228,11 +222,9 @@ int main(int argc, char **argv)
 			}
 		}
 
-		gfxFlushBuffers();
-		gfxSwapBuffers();
-		gfxWaitForVsync();
+		consoleUpdate(con);
 	}
 
-	gfxExit();
+	consoleExit(con);
 	return 0;
 }

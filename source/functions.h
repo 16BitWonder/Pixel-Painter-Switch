@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <switch.h>
+
 //Row, Col, currentColor, isDrawing
 void updateColorSelection(int, int, int, bool, int);
 
